@@ -107,6 +107,39 @@
 	};
 };
 
+&spi0 {
+        status = "okay";
+};
+
+&spi1 {
+        status = "okay";
+};
+
+&spi2 {
+        status = "okay";
+
+        // /delete-node/ spidev@0;
+        st7789v: st7789v@0{
+                compatible = "sitronix,st7789";
+                reg = <0>;
+                status = "disabled";
+                spi-max-frequency = <80000000>;
+                spi-cpol;
+                spi-cpha;
+                rotate = <0>;
+                fps = <60>;
+                rgb;
+                buswidth = <8>;
+                dc = <&porta 26 GPIO_ACTIVE_HIGH>;
+                reset = <&porta 27 GPIO_ACTIVE_LOW>;
+                debug = <1>;
+        };
+};
+
+&spi3 {
+	status = "okay";
+};
+
 &dac {
         status = "okay";
         /delete-property/ mute-gpio-r;
@@ -127,6 +160,21 @@
 / {
         model = "LicheeRv Nano";
 
+        spi4: spi4@gpio {
+                compatible = "spi-gpio";
+                sck-gpio = <&porta 22 0>;
+                miso-gpio = <&porta 23 0>;
+                mosi-gpio = <&porta 25 0>;
+                cs-gpio = <&porta 24 GPIO_ACTIVE_LOW>;
+                num-chipselects = <1>;
+                status = "okay";
+
+                spidev@0 {
+                        compatible = "spidev";
+                        reg = <0>;
+                };
+        };
+
         gpio-keys {
                 compatible = "gpio-keys";
                 key-user {
@@ -137,14 +185,14 @@
                 };
         };
 
-	leds {
-		compatible = "gpio-leds";
+        leds {
+                compatible = "gpio-leds";
 
-		led-user {
-			gpios = <&porta 14 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "activity";
-		};
-	};
+                led-user {
+                        gpios = <&porta 14 GPIO_ACTIVE_HIGH>;
+                        linux,default-trigger = "activity";
+                };
+        };
 
         wifisd:wifi-sd@4320000 {
                 compatible = "cvitek,cv181x-sdio";
